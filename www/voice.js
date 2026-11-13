@@ -37,9 +37,15 @@ async function listen() {
 
         if (!voiceListener) {
             voiceListener = await SR.addListener("partialResults", (data) => {
-                if (!listeningEnabled || speaking || !data.matches?.length) return;
+                if (!listeningEnabled || speaking) return;
+
+                if (!data.matches?.length) {
+                    setStatus("LISTENING: NO SPEECH RESULT");
+                    return;
+                }
 
                 const text = data.matches[0].trim();
+                setStatus("HEARD: " + text);
                 if (!text) return;
 
                 pendingTranscript = text;
