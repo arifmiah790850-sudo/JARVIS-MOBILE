@@ -97,12 +97,45 @@ input, select {
     overflow-wrap: anywhere;
 }
 
+
+#customPanel {
+    display: none;
+    margin: 15px;
+    padding: 15px;
+    border: 1px solid #00eaff;
+    border-radius: 12px;
+    background: #101c30;
+}
+.logoChoice {
+    font-size: 28px;
+    min-width: 58px;
+    padding: 12px;
+}
+
 </style>
 </head>
 
 <body>
 
 <header>J.A.R.V.I.S</header>
+
+<div>
+<button onclick="toggleCustomization()">⚙ SETTINGS</button>
+</div>
+
+<div id="customPanel">
+    <h3>JARVIS CUSTOMIZATION</h3>
+    <p>Choose App Logo</p>
+    <button class="logoChoice" onclick="chooseLogo('🤖')">🤖</button>
+    <button class="logoChoice" onclick="chooseLogo('🧠')">🧠</button>
+    <button class="logoChoice" onclick="chooseLogo('⚡')">⚡</button>
+    <button class="logoChoice" onclick="chooseLogo('🔷')">🔷</button>
+    <button class="logoChoice" onclick="chooseLogo('👁️')">👁️</button>
+    <p id="logoStatus">Select your favorite logo.</p>
+    <p>Home Screen App Icon: Next setup required.</p>
+    <button onclick="toggleCustomization()">CLOSE</button>
+</div>
+
 
 <div class="status" id="status">
 SYSTEM ONLINE
@@ -182,7 +215,8 @@ async function speak(text) {
 
         await TTS.speak({
             text: text,
-            lang: document.getElementById("language").value,
+            lang:
+document.getElementById("language").value,
             rate: 0.95,
             pitch: 1.0,
             volume: 1.0
@@ -283,6 +317,25 @@ document.getElementById("language")
         startListening();
     }
 });
+
+
+function toggleCustomization() {
+    const panel = document.getElementById("customPanel");
+    panel.style.display =
+        panel.style.display === "block" ? "none" : "block";
+}
+
+function chooseLogo(logo) {
+    document.getElementById("circle").textContent = logo;
+    localStorage.setItem("jarvisLogo", logo);
+    document.getElementById("logoStatus").textContent =
+        "Logo saved successfully!";
+}
+
+const savedLogo = localStorage.getItem("jarvisLogo");
+if (savedLogo) {
+    document.getElementById("circle").textContent = savedLogo;
+}
 
 window.addEventListener("beforeunload", () => {
     stopListening();
