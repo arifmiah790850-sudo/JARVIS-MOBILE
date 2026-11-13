@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #050b16;
+    color: #00eaff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+header {
+    padding: 25px;
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 5px;
+}
+
+.status {
+    color: #00ff88;
+    margin: 15px;
+    font-size: 14px;
+}
+
+.circle {
+    width: 170px;
+    height: 170px;
+    border: 3px solid #00eaff;
+    border-radius: 50%;
+    margin: 35px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 65px;
+    box-shadow: 0 0 30px #007bff;
+}
+
+.active {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    50% {
+        box-shadow: 0 0 60px #00eaff;
+    }
+}
+
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    margin: 7px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.stop {
+    background: #d62828;
+}
+
+input, select {
+    width: 85%;
+    padding: 14px;
+    margin: 8px;
+    border-radius: 8px;
+    border: 1px solid #00eaff;
+    background: #101c30;
+    color: white;
+}
+
+#chat {
+    margin: 20px;
+    padding: 12px;
+    height: 220px;
+    overflow-y: auto;
+    text-align: left;
+    border: 1px solid #006b88;
+    border-radius: 10px;
+}
+
+.message {
+    padding: 10px;
+    margin: 8px 0;
+    background: #10243a;
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>J.A.R.V.I.S</header>
+
+<div class="status" id="status">
+SYSTEM ONLINE
+</div>
+
+<div class="circle" id="circle">
+🤖
+</div>
+
+<div>
+<button onclick="startListening()">START LISTENING</button>
+<button class="stop" onclick="stopListening()">STOP</button>
+</div>
+
+<div>
+<select id="language">
+<option value="en-IN">English India</option>
+<option value="hi-IN">Hindi India</option>
+<option value="bn-IN">Bengali India</option>
+</select>
+</div>
+
+<div id="chat">
+<div class="message">
+JARVIS: Hello! I am Jarvis. System online.
+</div>
+</div>
+
+<input id="message" placeholder="Talk or type to Jarvis...">
+
+<div>
+<button onclick="sendMessage()">SEND</button>
+<button onclick="testVoice()">TEST VOICE</button>
+</div>
+
+<script src="speech.js"></script>
+<script src="voice.js"></script>
+<script>
+
+
+const statusBox = document.getElementById("status");
+const circle = document.getElementById("circle");
+const chat = document.getElementById("chat");
+
+function setStatus(text) {
+    statusBox.textContent = text;
+}
+
+function addMessage(sender, text) {
+    const div = document.createElement("div");
+    div.className = "message";
+
+    const title = document.createElement("b");
+    title.textContent = sender + ": ";
+
+    div.appendChild(title);
+    div.appendChild(document.createTextNode(text));
+
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function speak(text) {
+    if (!("speechSynthesis" in window)) {
+        setStatus("VOICE OUTPUT NOT SUPPORTED");
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+
+    speech.lang = document.getElementById("language").value;
+    speech.rate = 0.95;
+    speech.pitch = 1;
+
+    window.speechSynthesis.speak(speech);
+}
+
+function testVoice() {
+    speak("Hello. I am Jarvis. Your personal assistant system is online.");
+}
+
+function handleVoiceCommand(text) {
+    const command = text.toLowerCase().trim();
+
+    if (command.includes("হ্যালো") ||
+        command.includes("নমস্কার") ||
+        command.includes("হাই")) {
+        speak("নমস্কার! আমি জার্ভিস। কীভাবে সাহায্য করতে পারি?");
+        return;
+    }
+
+    if (command.includes("তোমার নাম") ||
+        command.includes("তুমি কে")) {
+        speak("আমার নাম জার্ভিস। আমি আপনার ব্যক্তিগত সহকারী।");
+        return;
+    }
+
+    if (command.includes("সময়") ||
+        command.includes("কয়টা বাজে")) {
+        const time = new Date().toLocaleTimeString("bn-IN");
+        speak("এখন সময় " + time);
+        return;
+    }
+
+    if (command.includes("stop listening") ||
+        command.includes("বন্ধ করো") ||
+        command.includes("থামো")) {
+        speak("ঠিক আছে। আমি শুনছি না।");
+        stopListening();
+        return;
+    }
+
+    if (command.includes("hello")) {
+        speak("Hello! I am Jarvis. How can I help you?");
+        return;
+    }
+
+    speak("আমি আপনার কথা শুনেছি। আরও একটু বুঝিয়ে বলবেন?");
+}
+
+function sendMessage() {
+
+    const input = document.getElementById("message");
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    addMessage("YOU", text);
+    input.value = "";
+
+    handleVoiceCommand(text);
+}
+
+document.getElementById("message")
+.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
+
+document.getElementById("language")
+.addEventListener("change", () => {
+    if (listeningEnabled) {
+        stopListening();
+        startListening();
+    }
+});
+
+window.addEventListener("beforeunload", () => {
+    stopListening();
+});
+
+</script>
+</body>
+</html>

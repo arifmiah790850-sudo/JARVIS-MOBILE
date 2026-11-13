@@ -58,8 +58,15 @@ async function listen() {
                     recognition = null;
 
                     addMessage("YOU", finalText);
-                    setStatus("VOICE RECEIVED");
-                    handleVoiceCommand(finalText);
+                    setStatus("PROCESSING VOICE: " + finalText);
+
+                    try {
+                        handleVoiceCommand(finalText);
+                    } catch (error) {
+                        console.error("Voice command error:", error);
+                        setStatus("COMMAND ERROR: " + error.message);
+                        speaking = false;
+                    }
 
                     setTimeout(() => {
                         lastHandledTranscript = "";
