@@ -66,7 +66,7 @@ async function listen() {
                         lastHandledTranscript = "";
                     }, 2500);
 
-                }, 1000);
+                }, 1800);
             });
         }
 

@@ -201,36 +201,25 @@ function testVoice() {
 function handleVoiceCommand(text) {
     const command = text.toLowerCase().trim();
 
-    if (command.includes("হ্যালো") ||
-        command.includes("নমস্কার") ||
-        command.includes("হাই")) {
-        speak("নমস্কার! আমি জার্ভিস। কীভাবে সাহায্য করতে পারি?");
+    if (/হ্যালো|নমস্কার|নমস্তে|হাই|hello|hi|hey/.test(command)) {
+        speak("Hello! আমি জার্ভিস। কীভাবে সাহায্য করতে পারি?");
         return;
     }
 
-    if (command.includes("তোমার নাম") ||
-        command.includes("তুমি কে")) {
+    if (/তোমার নাম|তুমি কে|your name|who are you/.test(command)) {
         speak("আমার নাম জার্ভিস। আমি আপনার ব্যক্তিগত সহকারী।");
         return;
     }
 
-    if (command.includes("সময়") ||
-        command.includes("কয়টা বাজে")) {
+    if (/সময়|কয়টা বাজে|time/.test(command)) {
         const time = new Date().toLocaleTimeString("bn-IN");
         speak("এখন সময় " + time);
         return;
     }
 
-    if (command.includes("stop listening") ||
-        command.includes("বন্ধ করো") ||
-        command.includes("থামো")) {
-        speak("ঠিক আছে। আমি শুনছি না।");
+    if (/stop listening|বন্ধ করো|থামো/.test(command)) {
+        speak("ঠিক আছে।");
         stopListening();
-        return;
-    }
-
-    if (command.includes("hello")) {
-        speak("Hello! I am Jarvis. How can I help you?");
         return;
     }
 
