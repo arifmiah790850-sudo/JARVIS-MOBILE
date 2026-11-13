@@ -1,171 +1,369 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>J.A.R.V.I.S AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;background:#030914;color:#00d9ff;
- font-family:Arial,sans-serif;text-align:center;
- min-height:100vh;
- background-image:radial-gradient(ellipse at center,#102b43 0%,#030914 70%);
+* {
+    box-sizing: border-box;
 }
-header{padding:25px 10px 5px}
-h1{letter-spacing:7px;text-shadow:0 0 18px #00d9ff;margin:8px}
-.sub{font-size:11px;letter-spacing:3px;color:#8bcde0}
-.panel{margin:20px 15px;padding:18px;border:1px solid #087e9d;
- border-radius:18px;background:#071726cc;box-shadow:0 0 20px #00608033}
-.reactor{
- width:190px;height:190px;margin:25px auto;
- border:3px solid #00d9ff;border-radius:50%;
- display:flex;align-items:center;justify-content:center;
- font-size:42px;font-weight:bold;
- box-shadow:0 0 20px #00d9ff,inset 0 0 25px #00d9ff;
- animation:pulse 2s infinite alternate;
- position:relative;
+
+body {
+    margin: 0;
+    background: #050b16;
+    color: #00eaff;
+    font-family: Arial, sans-serif;
+    text-align: center;
 }
-.reactor:before,.reactor:after{
- content:"";position:absolute;border:1px solid #00d9ff;
- border-radius:50%;inset:12px;animation:spin 8s linear infinite;
+
+header {
+    padding: 25px;
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 5px;
 }
-.reactor:after{inset:25px;animation-direction:reverse}
-@keyframes pulse{to{box-shadow:0 0 40px #00d9ff,inset 0 0 35px #00d9ff}}
-@keyframes spin{to{transform:rotate(360deg)}}
-#status{color:#8beaff;font-size:13px;min-height:20px}
-button{
- background:#06263a;color:#00eaff;border:1px solid #00d9ff;
- border-radius:12px;padding:13px 18px;margin:5px;
- font-size:14px;font-weight:bold;
+
+.status {
+    color: #00ff88;
+    margin: 15px;
+    font-size: 14px;
 }
-button:active{background:#087d9d}
-input{
- width:100%;padding:14px;background:#020d18;
- color:white;border:1px solid #087e9d;border-radius:10px;
- font-size:15px;outline:none;
+
+.circle {
+    width: 170px;
+    height: 170px;
+    border: 3px solid #00eaff;
+    border-radius: 50%;
+    margin: 35px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 65px;
+    box-shadow: 0 0 30px #007bff;
 }
-.chat{height:210px;overflow-y:auto;text-align:left;
- padding:10px;background:#020d18;border-radius:10px;
- margin-bottom:12px;color:#d9f8ff;font-size:14px}
-.msg{padding:9px;margin:7px 0;border-radius:9px;background:#103047}
-.user{color:#fff;border-left:3px solid #00d9ff}
-.jarvis{color:#75edff;border-left:3px solid #087e9d}
-.small{font-size:11px;color:#7296a9;margin:15px}
+
+.active {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    50% {
+        box-shadow: 0 0 60px #00eaff;
+    }
+}
+
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    margin: 7px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.stop {
+    background: #d62828;
+}
+
+input, select {
+    width: 85%;
+    padding: 14px;
+    margin: 8px;
+    border-radius: 8px;
+    border: 1px solid #00eaff;
+    background: #101c30;
+    color: white;
+}
+
+#chat {
+    margin: 20px;
+    padding: 12px;
+    height: 220px;
+    overflow-y: auto;
+    text-align: left;
+    border: 1px solid #006b88;
+    border-radius: 10px;
+}
+
+.message {
+    padding: 10px;
+    margin: 8px 0;
+    background: #10243a;
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
 </style>
 </head>
+
 <body>
-<header>
-<h1>J.A.R.V.I.S</h1>
-<div class="sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
-</header>
 
-<div class="reactor" id="reactor">AI</div>
-<p id="status">● SYSTEM ONLINE</p>
+<header>J.A.R.V.I.S</header>
 
-<div class="panel">
-<h3>VOICE CONTROL</h3>
-<button onclick="testVoice()">🔊 TEST VOICE</button>
-<button onclick="listen()">🎙️ START LISTENING</button>
-<button onclick="stopListening()">■ STOP</button>
-<p class="small">Voice input depends on Android WebView support.</p>
+<div class="status" id="status">
+SYSTEM ONLINE
 </div>
 
-<div class="panel">
-<h3>AI COMMUNICATION</h3>
-<div class="chat" id="chat">
-<div class="msg jarvis">JARVIS: Hello! System online. How can I help you?</div>
-</div>
-<input id="message" placeholder="Type your message..." />
-<button onclick="sendMessage()">SEND MESSAGE</button>
-<button onclick="clearChat()">CLEAR CHAT</button>
+<div class="circle" id="circle">
+🤖
 </div>
 
-<p class="small">J.A.R.V.I.S MOBILE AI • VERSION 2.0</p>
+<div>
+<button onclick="startListening()">START LISTENING</button>
+<button class="stop" onclick="stopListening()">STOP</button>
+</div>
+
+<div>
+<select id="language">
+<option value="en-IN">English India</option>
+<option value="hi-IN">Hindi India</option>
+<option value="bn-IN">Bengali India</option>
+</select>
+</div>
+
+<div id="chat">
+<div class="message">
+JARVIS: Hello! I am Jarvis. System online.
+</div>
+</div>
+
+<input id="message" placeholder="Talk or type to Jarvis...">
+
+<div>
+<button onclick="sendMessage()">SEND</button>
+<button onclick="testVoice()">TEST VOICE</button>
+</div>
 
 <script>
-const statusText=document.getElementById("status");
-const chat=document.getElementById("chat");
-let recognition=null;
 
-function setStatus(t){
- statusText.textContent="● "+t;
+let recognition = null;
+let listeningEnabled = false;
+let restarting = false;
+
+const statusBox = document.getElementById("status");
+const circle = document.getElementById("circle");
+const chat = document.getElementById("chat");
+
+function setStatus(text) {
+    statusBox.textContent = text;
 }
 
-function addMessage(who,text){
- const div=document.createElement("div");
- div.className="msg "+(who==="YOU"?"user":"jarvis");
- div.textContent=who+": "+text;
- chat.appendChild(div);
- chat.scrollTop=chat.scrollHeight;
+function addMessage(sender, text) {
+    const div = document.createElement("div");
+    div.className = "message";
+
+    const title = document.createElement("b");
+    title.textContent = sender + ": ";
+
+    div.appendChild(title);
+    div.appendChild(document.createTextNode(text));
+
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
 }
 
-function speak(text){
- if(!("speechSynthesis" in window)){
-  setStatus("VOICE OUTPUT NOT SUPPORTED");
-  return;
- }
- speechSynthesis.cancel();
- const msg=new SpeechSynthesisUtterance(text);
- msg.lang="en-US";
- msg.rate=0.95;
- msg.onstart=()=>setStatus("JARVIS SPEAKING...");
- msg.onend=()=>setStatus("SYSTEM ONLINE");
- msg.onerror=()=>setStatus("VOICE ERROR");
- speechSynthesis.speak(msg);
+function speak(text) {
+    if (!("speechSynthesis" in window)) {
+        setStatus("VOICE OUTPUT NOT SUPPORTED");
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+
+    speech.lang = document.getElementById("language").value;
+    speech.rate = 0.95;
+    speech.pitch = 1;
+
+    window.speechSynthesis.speak(speech);
 }
 
-function testVoice(){
- speak("Hello. I am Jarvis. Your personal assistant system is online.");
+function testVoice() {
+    speak("Hello. I am Jarvis. Your personal assistant system is online.");
 }
 
-function listen(){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SR){
-  setStatus("SPEECH RECOGNITION NOT SUPPORTED");
-  addMessage("JARVIS","Microphone recognition is not available in this WebView.");
-  return;
- }
- recognition=new SR();
- recognition.lang="en-IN";
- recognition.continuous=false;
- recognition.interimResults=false;
- recognition.onstart=()=>setStatus("LISTENING...");
- recognition.onresult=(event)=>{
-  const text=event.results[0][0].transcript;
-  document.getElementById("message").value=text;
-  addMessage("YOU",text);
-  setStatus("VOICE RECEIVED");
- };
- recognition.onerror=(event)=>setStatus("MIC ERROR: "+event.error);
- recognition.onend=()=>{if(statusText.textContent.includes("LISTENING"))setStatus("SYSTEM ONLINE")};
- try{recognition.start()}catch(e){setStatus("MICROPHONE BUSY")}
+function listen() {
+
+    const SR = window.SpeechRecognition ||
+               window.webkitSpeechRecognition;
+
+    if (!SR) {
+        setStatus("SPEECH RECOGNITION NOT SUPPORTED");
+        addMessage("JARVIS", "Speech recognition is not available in this WebView.");
+        listeningEnabled = false;
+        return;
+    }
+
+    if (recognition || !listeningEnabled) return;
+
+    const rec = new SR();
+    recognition = rec;
+
+    rec.lang = document.getElementById("language").value;
+    rec.continuous = true;
+    rec.interimResults = false;
+
+    rec.onstart = () => {
+        setStatus("🔴 LIVE LISTENING");
+        circle.classList.add("active");
+        restarting = false;
+    };
+
+    rec.onresult = (event) => {
+
+        const result = event.results[event.results.length - 1];
+
+        if (!result.isFinal) return;
+
+        const text = result[0].transcript.trim();
+
+        document.getElementById("message").value = text;
+
+        addMessage("YOU", text);
+
+        setStatus("VOICE RECEIVED");
+
+        handleVoiceCommand(text);
+    };
+
+    rec.onerror = (event) => {
+        setStatus("MIC ERROR: " + event.error);
+
+        if (
+            event.error === "not-allowed" ||
+            event.error === "service-not-allowed"
+        ) {
+            listeningEnabled = false;
+        }
+    };
+
+    rec.onend = () => {
+
+        if (recognition === rec) {
+            recognition = null;
+        }
+
+        circle.classList.remove("active");
+
+        if (listeningEnabled && !restarting) {
+            restarting = true;
+
+            setStatus("RESTARTING LISTENING...");
+
+            setTimeout(() => {
+                restarting = false;
+
+                if (listeningEnabled && !recognition) {
+                    listen();
+                }
+            }, 1000);
+
+        } else if (!listeningEnabled) {
+            setStatus("SYSTEM ONLINE");
+        }
+    };
+
+    try {
+        rec.start();
+    } catch (error) {
+        recognition = null;
+        setStatus("MICROPHONE BUSY");
+    }
 }
 
-function stopListening(){
- if(recognition)recognition.stop();
- setStatus("SYSTEM ONLINE");
+function startListening() {
+
+    if (listeningEnabled) return;
+
+    listeningEnabled = true;
+    restarting = false;
+
+    listen();
 }
 
-function sendMessage(){
- const input=document.getElementById("message");
- const text=input.value.trim();
- if(!text)return;
- addMessage("YOU",text);
- input.value="";
- addMessage("JARVIS","Your message has been received. AI Brain connection is not configured yet. A secure AI backend is required for intelligent answers.");
- setStatus("MESSAGE RECEIVED");
+function stopListening() {
+
+    listeningEnabled = false;
+    restarting = false;
+
+    if (recognition) {
+        const old = recognition;
+        recognition = null;
+        old.stop();
+    }
+
+    circle.classList.remove("active");
+    setStatus("LISTENING STOPPED");
 }
 
-function clearChat(){
- chat.innerHTML="";
- addMessage("JARVIS","Conversation cleared. System online.");
- setStatus("SYSTEM ONLINE");
+function handleVoiceCommand(text) {
+
+    const command = text.toLowerCase();
+
+    if (command.includes("stop listening")) {
+        speak("Okay. Listening stopped.");
+        stopListening();
+        return;
+    }
+
+    if (command.includes("hello") ||
+        command.includes("hello jarvis")) {
+
+        speak("Hello. I am Jarvis. How can I help you?");
+        return;
+    }
+
+    if (command.includes("your name")) {
+        speak("My name is Jarvis. Your personal assistant.");
+        return;
+    }
+
+    if (command.includes("time")) {
+        const time = new Date().toLocaleTimeString();
+        speak("The current time is " + time);
+        return;
+    }
+
+    speak("I heard you. Your AI brain connection is not configured yet.");
 }
 
-document.getElementById("message").addEventListener("keydown",e=>{
- if(e.key==="Enter")sendMessage();
+function sendMessage() {
+
+    const input = document.getElementById("message");
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    addMessage("YOU", text);
+    input.value = "";
+
+    handleVoiceCommand(text);
+}
+
+document.getElementById("message")
+.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
 });
+
+document.getElementById("language")
+.addEventListener("change", () => {
+    if (listeningEnabled) {
+        stopListening();
+        startListening();
+    }
+});
+
+window.addEventListener("beforeunload", () => {
+    stopListening();
+});
+
 </script>
 </body>
 </html>
