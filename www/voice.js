@@ -59,11 +59,13 @@ async function listen() {
 
                     lastHandledTranscript = finalText;
                     speaking = true;
+                    setStatus("STOPPING MICROPHONE...");
 
                     try {
                         await SR.stop();
+                        setStatus("MICROPHONE STOPPED");
                     } catch (error) {
-                        console.log("Recognition stop:", error);
+                        setStatus("STOP ERROR: " + (error.message || error));
                     }
 
                     recognition = null;
