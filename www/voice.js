@@ -38,7 +38,6 @@ async function listen() {
                 if (!text) return;
 
                 pendingTranscript = text;
-                document.getElementById("message").value = text;
 
                 clearTimeout(partialTimer);
 

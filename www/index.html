@@ -131,10 +131,10 @@ JARVIS: Hello! I am Jarvis. System online.
 </div>
 </div>
 
-<input id="message" placeholder="Talk or type to Jarvis...">
+
 
 <div>
-<button onclick="sendMessage()">SEND</button>
+
 <button onclick="testVoice()">TEST VOICE</button>
 </div>
 
@@ -226,25 +226,7 @@ function handleVoiceCommand(text) {
     speak("আমি আপনার কথা শুনেছি। আরও একটু বুঝিয়ে বলবেন?");
 }
 
-function sendMessage() {
 
-    const input = document.getElementById("message");
-    const text = input.value.trim();
-
-    if (!text) return;
-
-    addMessage("YOU", text);
-    input.value = "";
-
-    handleVoiceCommand(text);
-}
-
-document.getElementById("message")
-.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-});
 
 document.getElementById("language")
 .addEventListener("change", () => {
