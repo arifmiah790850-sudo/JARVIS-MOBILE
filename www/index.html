@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS AI</title>
+<style>
+body {
+  margin: 0;
+  background: #020817;
+  color: #00cfff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+h1 {
+  margin-top: 45px;
+  letter-spacing: 8px;
+  text-shadow: 0 0 15px #00cfff;
+}
+.reactor {
+  width: 190px;
+  height: 190px;
+  border: 5px solid #00cfff;
+  border-radius: 50%;
+  margin: 55px auto 25px;
+  box-shadow: 0 0 25px #00cfff, inset 0 0 25px #00cfff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  animation: glow 2s infinite alternate;
+}
+@keyframes glow {
+  from { box-shadow: 0 0 12px #00cfff; }
+  to { box-shadow: 0 0 35px #00cfff; }
+}
+button {
+  background: transparent;
+  color: #00cfff;
+  border: 2px solid #00cfff;
+  border-radius: 25px;
+  padding: 14px 35px;
+  font-size: 17px;
+  margin: 10px;
+}
+#status { margin-top: 25px; }
+</style>
+</head>
+<body>
+<h1>J.A.R.V.I.S</h1>
+<div class="reactor">AI</div>
+<p>JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+<button onclick="speak()">TEST VOICE</button>
+<p id="status">SYSTEM ONLINE</p>
+<script>
+function speak() {
+  document.getElementById("status").innerText = "JARVIS SPEAKING...";
+  let msg = new SpeechSynthesisUtterance("Hello. I am Jarvis. System online.");
+  msg.lang = "en-US";
+  msg.onend = () => document.getElementById("status").innerText = "SYSTEM ONLINE";
+  speechSynthesis.speak(msg);
+}
+</script>
+</body>
+</html>
