@@ -138,6 +138,8 @@ JARVIS: Hello! I am Jarvis. System online.
 <button onclick="testVoice()">TEST VOICE</button>
 </div>
 
+<script src="speech.js"></script>
+<script src="voice.js"></script>
 <script>
 
 let recognition = null;
@@ -187,149 +189,43 @@ function testVoice() {
     speak("Hello. I am Jarvis. Your personal assistant system is online.");
 }
 
-function listen() {
+function handleVoiceCommand(text) {
+    const command = text.toLowerCase().trim();
 
-    const SR = window.SpeechRecognition ||
-               window.webkitSpeechRecognition;
-
-    if (!SR) {
-        setStatus("SPEECH RECOGNITION NOT SUPPORTED");
-        addMessage("JARVIS", "Speech recognition is not available in this WebView.");
-        listeningEnabled = false;
+    if (command.includes("হ্যালো") ||
+        command.includes("নমস্কার") ||
+        command.includes("হাই")) {
+        speak("নমস্কার! আমি জার্ভিস। কীভাবে সাহায্য করতে পারি?");
         return;
     }
 
-    if (recognition || !listeningEnabled) return;
-
-    const rec = new SR();
-    recognition = rec;
-
-    rec.lang = document.getElementById("language").value;
-    rec.continuous = true;
-    rec.interimResults = false;
-
-    rec.onstart = () => {
-        setStatus("🔴 LIVE LISTENING");
-        circle.classList.add("active");
-        restarting = false;
-    };
-
-    rec.onresult = (event) => {
-
-        const result = event.results[event.results.length - 1];
-
-        if (!result.isFinal) return;
-
-        const text = result[0].transcript.trim();
-
-        document.getElementById("message").value = text;
-
-        addMessage("YOU", text);
-
-        setStatus("VOICE RECEIVED");
-
-        handleVoiceCommand(text);
-    };
-
-    rec.onerror = (event) => {
-        setStatus("MIC ERROR: " + event.error);
-
-        if (
-            event.error === "not-allowed" ||
-            event.error === "service-not-allowed"
-        ) {
-            listeningEnabled = false;
-        }
-    };
-
-    rec.onend = () => {
-
-        if (recognition === rec) {
-            recognition = null;
-        }
-
-        circle.classList.remove("active");
-
-        if (listeningEnabled && !restarting) {
-            restarting = true;
-
-            setStatus("RESTARTING LISTENING...");
-
-            setTimeout(() => {
-                restarting = false;
-
-                if (listeningEnabled && !recognition) {
-                    listen();
-                }
-            }, 1000);
-
-        } else if (!listeningEnabled) {
-            setStatus("SYSTEM ONLINE");
-        }
-    };
-
-    try {
-        rec.start();
-    } catch (error) {
-        recognition = null;
-        setStatus("MICROPHONE BUSY");
-    }
-}
-
-function startListening() {
-
-    if (listeningEnabled) return;
-
-    listeningEnabled = true;
-    restarting = false;
-
-    listen();
-}
-
-function stopListening() {
-
-    listeningEnabled = false;
-    restarting = false;
-
-    if (recognition) {
-        const old = recognition;
-        recognition = null;
-        old.stop();
+    if (command.includes("তোমার নাম") ||
+        command.includes("তুমি কে")) {
+        speak("আমার নাম জার্ভিস। আমি আপনার ব্যক্তিগত সহকারী।");
+        return;
     }
 
-    circle.classList.remove("active");
-    setStatus("LISTENING STOPPED");
-}
+    if (command.includes("সময়") ||
+        command.includes("কয়টা বাজে")) {
+        const time = new Date().toLocaleTimeString("bn-IN");
+        speak("এখন সময় " + time);
+        return;
+    }
 
-function handleVoiceCommand(text) {
-
-    const command = text.toLowerCase();
-
-    if (command.includes("stop listening")) {
-        speak("Okay. Listening stopped.");
+    if (command.includes("stop listening") ||
+        command.includes("বন্ধ করো") ||
+        command.includes("থামো")) {
+        speak("ঠিক আছে। আমি শুনছি না।");
         stopListening();
         return;
     }
 
-    if (command.includes("hello") ||
-        command.includes("hello jarvis")) {
-
-        speak("Hello. I am Jarvis. How can I help you?");
+    if (command.includes("hello")) {
+        speak("Hello! I am Jarvis. How can I help you?");
         return;
     }
 
-    if (command.includes("your name")) {
-        speak("My name is Jarvis. Your personal assistant.");
-        return;
-    }
-
-    if (command.includes("time")) {
-        const time = new Date().toLocaleTimeString();
-        speak("The current time is " + time);
-        return;
-    }
-
-    speak("I heard you. Your AI brain connection is not configured yet.");
+    speak("আমি আপনার কথা শুনেছি। আরও একটু বুঝিয়ে বলবেন?");
 }
 
 function sendMessage() {
