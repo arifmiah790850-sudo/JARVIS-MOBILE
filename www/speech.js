@@ -726,8 +726,10 @@
     "src/speech.js"() {
       init_esm();
       init_esm2();
+      init_dist();
       window.SpeechRecognitionPlugin = SpeechRecognition2;
       window.TextToSpeechPlugin = TextToSpeech;
+      window.PhoneControlPlugin = registerPlugin("PhoneControl");
     }
   });
   require_speech();

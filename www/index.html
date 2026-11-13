@@ -198,8 +198,56 @@ function testVoice() {
     speak("Hello. I am Jarvis. Your personal assistant system is online.");
 }
 
+
+async function runPhoneCommand(target) {
+    const plugin = window.PhoneControlPlugin;
+
+    if (!plugin) {
+        speak("Phone control plugin পাওয়া যায়নি।");
+        return;
+    }
+
+    try {
+        await plugin.openTarget({ target });
+        setStatus("OPENING: " + target.toUpperCase());
+    } catch (error) {
+        setStatus("PHONE ERROR: " + (error.message || error));
+        speak("দুঃখিত, কাজটি করা যায়নি।");
+    }
+}
+
 function handleVoiceCommand(text) {
     const command = text.toLowerCase().trim();
+
+    if (/youtube|ইউটিউব/.test(command)) {
+        runPhoneCommand("youtube");
+        return;
+    }
+
+    if (/camera|ক্যামেরা/.test(command)) {
+        runPhoneCommand("camera");
+        return;
+    }
+
+    if (/wifi|wi-fi|ওয়াইফাই|ওয়াই ফাই/.test(command)) {
+        runPhoneCommand("wifi");
+        return;
+    }
+
+    if (/bluetooth|ব্লুটুথ/.test(command)) {
+        runPhoneCommand("bluetooth");
+        return;
+    }
+
+    if (/chrome|ক্রোম/.test(command)) {
+        runPhoneCommand("chrome");
+        return;
+    }
+
+    if (/settings|সেটিংস|সেটিং/.test(command)) {
+        runPhoneCommand("settings");
+        return;
+    }
 
     if (/হ্যালো|নমস্কার|নমস্তে|হাই|hello|hi|hey/.test(command)) {
         speak("Hello! আমি জার্ভিস। কীভাবে সাহায্য করতে পারি?");
