@@ -142,9 +142,6 @@ JARVIS: Hello! I am Jarvis. System online.
 <script src="voice.js"></script>
 <script>
 
-let recognition = null;
-let listeningEnabled = false;
-let restarting = false;
 
 const statusBox = document.getElementById("status");
 const circle = document.getElementById("circle");
@@ -171,8 +168,11 @@ function addMessage(sender, text) {
 function speak(text) {
     if (!("speechSynthesis" in window)) {
         setStatus("VOICE OUTPUT NOT SUPPORTED");
+        resumeListeningAfterSpeech();
         return;
     }
+
+    pauseListeningForSpeech();
 
     window.speechSynthesis.cancel();
 
@@ -181,6 +181,9 @@ function speak(text) {
     speech.lang = document.getElementById("language").value;
     speech.rate = 0.95;
     speech.pitch = 1;
+
+    speech.onend = () => resumeListeningAfterSpeech();
+    speech.onerror = () => resumeListeningAfterSpeech();
 
     window.speechSynthesis.speak(speech);
 }
