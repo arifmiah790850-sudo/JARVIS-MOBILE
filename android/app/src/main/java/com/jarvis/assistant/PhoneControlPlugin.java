@@ -20,7 +20,7 @@ public class PhoneControlPlugin extends Plugin {
 
         switch (target) {
             case "settings":
-                intent = new Intent(Settings.ACTION_SETTINGS);
+                intent = new Intent("android.settings.SETTINGS");
                 break;
 
             case "wifi":
