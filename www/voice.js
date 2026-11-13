@@ -62,7 +62,7 @@ async function listen() {
                     setStatus("STOPPING MICROPHONE...");
 
                     try {
-                        await SR.stop();
+                        SR.stop().catch(error => console.log("Recognition stop:", error));
                         setStatus("MICROPHONE STOPPED");
                     } catch (error) {
                         setStatus("STOP ERROR: " + (error.message || error));
@@ -139,7 +139,7 @@ async function pauseListeningForSpeech() {
 
     if (recognition && window.SpeechRecognitionPlugin) {
         try {
-            await window.SpeechRecognitionPlugin.stop();
+            window.SpeechRecognitionPlugin.stop().catch(error => console.log("Pause:", error));
         } catch (error) {
             console.log("Pause:", error);
         }
@@ -179,7 +179,7 @@ async function stopListening() {
 
     try {
         if (recognition && window.SpeechRecognitionPlugin) {
-            await window.SpeechRecognitionPlugin.stop();
+            window.SpeechRecognitionPlugin.stop().catch(error => console.log("Stop:", error));
         }
     } catch (error) {
         console.log("Stop:", error);
