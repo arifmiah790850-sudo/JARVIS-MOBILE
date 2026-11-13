@@ -244,7 +244,7 @@ function handleVoiceCommand(text) {
         return;
     }
 
-    if (/settings|সেটিংস|সেটিং/.test(command)) {
+    if (/settings?|setting|সেটিংস|সেটিং/.test(command)) {
         runPhoneCommand("settings");
         return;
     }
