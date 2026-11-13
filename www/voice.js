@@ -11,7 +11,12 @@ let lastHandledTranscript = "";
 async function listen() {
     const SR = window.SpeechRecognitionPlugin;
 
-    if (!SR || !listeningEnabled || restarting || speaking || recognition) return;
+    if (!SR) {
+        setStatus("ERROR: SPEECH PLUGIN NOT LOADED");
+        return;
+    }
+
+    if (!listeningEnabled || restarting || speaking || recognition) return;
 
     try {
         const available = await SR.available();
