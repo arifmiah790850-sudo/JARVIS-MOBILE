@@ -165,27 +165,33 @@ function addMessage(sender, text) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-function speak(text) {
-    if (!("speechSynthesis" in window)) {
-        setStatus("VOICE OUTPUT NOT SUPPORTED");
-        resumeListeningAfterSpeech();
+async function speak(text) {
+    const TTS = window.TextToSpeechPlugin;
+
+    if (!TTS) {
+        setStatus("NATIVE VOICE NOT AVAILABLE");
         return;
     }
 
-    pauseListeningForSpeech();
+    await pauseListeningForSpeech();
 
-    window.speechSynthesis.cancel();
+    try {
+        try {
+            await TTS.stop();
+        } catch (e) {}
 
-    const speech = new SpeechSynthesisUtterance(text);
-
-    speech.lang = document.getElementById("language").value;
-    speech.rate = 0.95;
-    speech.pitch = 1;
-
-    speech.onend = () => resumeListeningAfterSpeech();
-    speech.onerror = () => resumeListeningAfterSpeech();
-
-    window.speechSynthesis.speak(speech);
+        await TTS.speak({
+            text: text,
+            lang: document.getElementById("language").value,
+            rate: 0.95,
+            pitch: 1.0,
+            volume: 1.0
+        });
+    } catch (error) {
+        setStatus("TTS ERROR: " + (error.message || error));
+    } finally {
+        resumeListeningAfterSpeech();
+    }
 }
 
 function testVoice() {
