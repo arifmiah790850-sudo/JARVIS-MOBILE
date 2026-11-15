@@ -331,6 +331,7 @@ ALIZA: সিস্টেম অনলাইন, Boss! আমি প্রস্
 <div>
 
 <button onclick="testVoice()">TEST VOICE</button>
+<button onclick="listAvailableVoices()">LIST VOICES</button>
 </div>
 
 <script src="speech.js"></script>
@@ -399,6 +400,35 @@ document.getElementById("language").value,
 
 function testVoice() {
     speak("নমস্কার Boss! আমি আলিজা। আপনার ব্যক্তিগত সহকারী। সিস্টেম সম্পূর্ণ প্রস্তুত।");
+}
+
+async function listAvailableVoices() {
+    const TTS = window.TextToSpeechPlugin;
+
+    if (!TTS) {
+        setStatus("TTS PLUGIN NOT AVAILABLE");
+        return;
+    }
+
+    try {
+        const result = await TTS.getSupportedVoices();
+        const voices = result.voices || [];
+
+        if (!voices.length) {
+            addMessage("ALIZA", "কোনো voice পাওয়া যায়নি।");
+            return;
+        }
+
+        const lines = voices.map((v, i) =>
+            (i + 1) + ". " + v.name + " (" + v.lang + ")" +
+            (v.default ? " [DEFAULT]" : "")
+        );
+
+        addMessage("ALIZA VOICES", lines.join(" | "));
+        setStatus("AVAILABLE VOICES: " + voices.length);
+    } catch (error) {
+        setStatus("VOICE LIST ERROR: " + (error.message || error));
+    }
 }
 
 
