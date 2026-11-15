@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS AI</title>
+<title>ALIZA AI</title>
 
 <style>
 * {
@@ -286,7 +286,7 @@ body > :not(.fx-background) {
 </div>
 
 <div id="customPanel">
-    <h3>JARVIS CUSTOMIZATION</h3>
+    <h3>ALIZA CUSTOMIZATION</h3>
     <p>Choose App Logo</p>
     <button class="logoChoice" onclick="chooseLogo('◉')">◉</button>
     <button class="logoChoice" onclick="chooseLogo('⌬')">⌬</button>
@@ -322,7 +322,7 @@ SYSTEM ONLINE
 
 <div id="chat">
 <div class="message">
-JARVIS: সিস্টেম অনলাইন, Boss! আমি প্রস্তুত।
+ALIZA: সিস্টেম অনলাইন, Boss! আমি প্রস্তুত।
 </div>
 </div>
 
@@ -398,7 +398,7 @@ document.getElementById("language").value,
 }
 
 function testVoice() {
-    speak("নমস্কার Boss! আমি জার্ভিস। আপনার ব্যক্তিগত সহকারী। সিস্টেম সম্পূর্ণ প্রস্তুত।");
+    speak("নমস্কার Boss! আমি আলিজা। আপনার ব্যক্তিগত সহকারী। সিস্টেম সম্পূর্ণ প্রস্তুত।");
 }
 
 
@@ -432,7 +432,7 @@ async function askJarvisAI(message) {
     }
 
     try {
-        setStatus("JARVIS AI THINKING...");
+        setStatus("ALIZA AI THINKING...");
 
         const response = await fetch(endpoint, {
             method: "POST",
@@ -454,12 +454,12 @@ async function askJarvisAI(message) {
             throw new Error("Invalid AI response");
         }
 
-        addMessage("JARVIS", reply);
+        addMessage("ALIZA", reply);
         setStatus("AI RESPONSE RECEIVED");
         await speak(reply);
 
     } catch (error) {
-        console.error("JARVIS AI:", error);
+        console.error("ALIZA AI:", error);
         setStatus("AI ERROR: " + error.message);
         await speak("দুঃখিত, AI সার্ভারের সঙ্গে যোগাযোগ করা যাচ্ছে না।");
     }
@@ -504,7 +504,7 @@ function handleVoiceCommand(text) {
     }
 
     if (/তোমার নাম|তুমি কে|your name|who are you/.test(command)) {
-        speak("আমার নাম জার্ভিস। আমি আপনার ব্যক্তিগত AI সহকারী, Boss।");
+        speak("আমার নাম আলিজা। আমি আপনার ব্যক্তিগত AI সহকারী, Boss।");
         return;
     }
 
