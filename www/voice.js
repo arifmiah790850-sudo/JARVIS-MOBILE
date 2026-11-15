@@ -2,11 +2,33 @@ let recognition = null;
 let listeningEnabled = false;
 let restarting = false;
 let speaking = false;
+
 let voiceListener = null;
 let stateListener = null;
+
 let partialTimer = null;
+let restartTimer = null;
 let pendingTranscript = "";
 let lastHandledTranscript = "";
+
+let startInProgress = false;
+
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function requestNativeStop() {
+    const SR = window.SpeechRecognitionPlugin;
+
+    if (!SR) return;
+
+    try {
+        // Plugin stop Promise resolve না করলেও আমরা await করছি না।
+        SR.stop().catch(error => console.log("Recognition stop:", error));
+    } catch (error) {
+        console.log("Recognition stop:", error);
+    }
+
+    await wait(350);
+}
 
 async function listen() {
     const SR = window.SpeechRecognitionPlugin;
@@ -16,7 +38,15 @@ async function listen() {
         return;
     }
 
-    if (!listeningEnabled || restarting || speaking || recognition) return;
+    if (
+        !listeningEnabled ||
+        restarting ||
+        speaking ||
+        recognition ||
+        startInProgress
+    ) return;
+
+    startInProgress = true;
 
     try {
         const available = await SR.available();
@@ -39,46 +69,48 @@ async function listen() {
             voiceListener = await SR.addListener("partialResults", (data) => {
                 if (!listeningEnabled || speaking) return;
 
-                if (!data.matches?.length) {
-                    setStatus("LISTENING: NO SPEECH RESULT");
-                    return;
-                }
+                if (!data.matches?.length) return;
 
                 const text = data.matches[0].trim();
-                setStatus("HEARD: " + text);
                 if (!text) return;
 
                 pendingTranscript = text;
+                setStatus("HEARD: " + text);
 
                 clearTimeout(partialTimer);
+                clearTimeout(restartTimer);
 
                 partialTimer = setTimeout(async () => {
+                    partialTimer = null;
+
                     const finalText = pendingTranscript.trim();
 
-                    if (!finalText || finalText === lastHandledTranscript) return;
+                    if (
+                        !finalText ||
+                        finalText === lastHandledTranscript ||
+                        !listeningEnabled
+                    ) return;
 
                     lastHandledTranscript = finalText;
                     speaking = true;
+
+                    clearTimeout(restartTimer);
                     setStatus("STOPPING MICROPHONE...");
 
-                    try {
-                        SR.stop().catch(error => console.log("Recognition stop:", error));
-                        setStatus("MICROPHONE STOPPED");
-                    } catch (error) {
-                        setStatus("STOP ERROR: " + (error.message || error));
-                    }
+                    await requestNativeStop();
 
                     recognition = null;
+                    pendingTranscript = "";
 
                     addMessage("YOU", finalText);
                     setStatus("PROCESSING VOICE: " + finalText);
 
                     try {
-                        handleVoiceCommand(finalText);
+                        await handleVoiceCommand(finalText);
                     } catch (error) {
                         console.error("Voice command error:", error);
-                        setStatus("COMMAND ERROR: " + error.message);
-                        speaking = false;
+                        setStatus("COMMAND ERROR: " + (error.message || error));
+                        resumeListeningAfterSpeech();
                     }
 
                     setTimeout(() => {
@@ -94,18 +126,32 @@ async function listen() {
                 if (data.status === "started") {
                     setStatus("🔴 LIVE LISTENING");
                     circle.classList.add("active");
-                } else {
-                    recognition = null;
-                    circle.classList.remove("active");
+                    return;
+                }
 
-                    if (listeningEnabled && !restarting && !speaking) {
-                        restarting = true;
+                recognition = null;
+                circle.classList.remove("active");
 
-                        setTimeout(() => {
-                            restarting = false;
-                            if (listeningEnabled && !speaking) listen();
-                        }, 1200);
-                    }
+                // কথার ফলাফল আসার অপেক্ষায় থাকলে Restart নয়।
+                if (
+                    listeningEnabled &&
+                    !speaking &&
+                    !restarting &&
+                    !partialTimer &&
+                    !pendingTranscript
+                ) {
+                    restarting = true;
+
+                    clearTimeout(restartTimer);
+
+                    restartTimer = setTimeout(() => {
+                        restarting = false;
+                        restartTimer = null;
+
+                        if (listeningEnabled && !speaking) {
+                            listen();
+                        }
+                    }, 1500);
                 }
             });
         }
@@ -129,21 +175,23 @@ async function listen() {
             listeningEnabled = false;
             circle.classList.remove("active");
         }
+
+    } finally {
+        startInProgress = false;
     }
 }
 
 async function pauseListeningForSpeech() {
     speaking = true;
+
     clearTimeout(partialTimer);
+    clearTimeout(restartTimer);
+
+    partialTimer = null;
+    restartTimer = null;
     pendingTranscript = "";
 
-    if (recognition && window.SpeechRecognitionPlugin) {
-        try {
-            window.SpeechRecognitionPlugin.stop().catch(error => console.log("Pause:", error));
-        } catch (error) {
-            console.log("Pause:", error);
-        }
-    }
+    await requestNativeStop();
 
     recognition = null;
     circle.classList.remove("active");
@@ -153,10 +201,17 @@ function resumeListeningAfterSpeech() {
     speaking = false;
 
     if (listeningEnabled) {
+        clearTimeout(restartTimer);
         setStatus("RESTARTING LISTENING...");
 
-        setTimeout(() => {
-            if (listeningEnabled && !speaking) listen();
+        restartTimer = setTimeout(() => {
+            restartTimer = null;
+
+            if (listeningEnabled && !speaking) {
+                recognition = null;
+                restarting = false;
+                listen();
+            }
         }, 700);
     }
 }
@@ -166,6 +221,7 @@ async function startListening() {
 
     listeningEnabled = true;
     restarting = false;
+    speaking = false;
     recognition = null;
 
     setStatus("STARTING MICROPHONE...");
@@ -175,15 +231,15 @@ async function startListening() {
 async function stopListening() {
     listeningEnabled = false;
     restarting = false;
-    clearTimeout(partialTimer);
 
-    try {
-        if (recognition && window.SpeechRecognitionPlugin) {
-            window.SpeechRecognitionPlugin.stop().catch(error => console.log("Stop:", error));
-        }
-    } catch (error) {
-        console.log("Stop:", error);
-    }
+    clearTimeout(partialTimer);
+    clearTimeout(restartTimer);
+
+    partialTimer = null;
+    restartTimer = null;
+    pendingTranscript = "";
+
+    await requestNativeStop();
 
     recognition = null;
     circle.classList.remove("active");
