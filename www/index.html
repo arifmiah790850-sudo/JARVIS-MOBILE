@@ -598,6 +598,77 @@ window.addEventListener("beforeunload", () => {
     stopListening();
 });
 
+
+// ALIZA_GAMING_ASSISTANT
+(function () {
+    const style = document.createElement("style");
+    style.textContent = `
+      #gamingPanel {
+        display:none; margin:15px; padding:18px;
+        background:#101c30; border:1px solid #00eaff;
+        border-radius:14px; box-shadow:0 0 20px #007bff55;
+      }
+      #gamingPanel input, #gamingPanel textarea {
+        width:100%; padding:12px; margin:8px 0;
+        background:#050b16; color:white;
+        border:1px solid #00eaff; border-radius:8px;
+      }
+      #gamingPanel textarea { min-height:90px; }
+    `;
+    document.head.appendChild(style);
+
+    const button = document.createElement("button");
+    button.id = "gamingAssistantButton";
+    button.textContent = "🎮 GAMING ASSISTANT";
+    button.style.background = "linear-gradient(90deg,#6d28d9,#007bff)";
+    button.onclick = function () {
+        const panel = document.getElementById("gamingPanel");
+        panel.style.display = panel.style.display === "block" ? "none" : "block";
+    };
+
+    const panel = document.createElement("section");
+    panel.id = "gamingPanel";
+    panel.innerHTML = `
+      <h2>🎮 ALIZA GAMING ASSISTANT</h2>
+      <p>গেমের নাম ও তোমার প্রশ্ন লেখো।</p>
+      <input id="gamingGame" placeholder="Game name (যেমন: Minecraft)">
+      <textarea id="gamingQuestion" placeholder="কী জানতে চাও?"></textarea>
+      <button id="gamingAsk">ASK ALIZA</button>
+      <button id="gamingClose" class="stop">CLOSE</button>
+      <p id="gamingStatus">Gaming Assistant Ready</p>
+    `;
+
+    const settingsButton = document.querySelector(
+        'button[onclick="toggleCustomization()"]'
+    );
+    if (!settingsButton || !settingsButton.parentElement) return;
+
+    settingsButton.parentElement.after(button, panel);
+
+    document.getElementById("gamingClose").onclick = function () {
+        panel.style.display = "none";
+    };
+
+    document.getElementById("gamingAsk").onclick = async function () {
+        const game = document.getElementById("gamingGame").value.trim();
+        const question = document.getElementById("gamingQuestion").value.trim();
+        const status = document.getElementById("gamingStatus");
+
+        if (!game || !question) {
+            status.textContent = "Game name এবং প্রশ্ন দুটোই লেখো।";
+            return;
+        }
+
+        status.textContent = "ALIZA AI-এর সঙ্গে যোগাযোগ হচ্ছে...";
+        await askJarvisAI(
+            "তুমি ALIZA Gaming Assistant। গেম: " + game +
+            "। ব্যবহারকারীর প্রশ্ন: " + question +
+            "। নিরাপদ, বৈধ এবং ন্যায্য গেমিং পরামর্শ দাও।"
+        );
+        status.textContent = "Request completed. Chat দেখো।";
+    };
+})();
+
 </script>
 </body>
 </html>
