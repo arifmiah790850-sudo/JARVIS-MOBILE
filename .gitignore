@@ -4,3 +4,17 @@ build/
 local.properties
 *.jks
 *.keystore
+.env
+node_modules
+
+# ALIZA local files
+*.log
+*.backup
+*.aliza-backup
+*.before-*
+*.boss-backup
+.aliza-check/
+Get
+Java
+Run
+"ervice restart\""
