@@ -457,8 +457,11 @@ async function askJarvisAI(message) {
         return;
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
     try {
-        setStatus("ALIZA AI THINKING...");
+        setStatus("ALIZA CONNECTING TO AI...");
 
         const response = await fetch(endpoint, {
             method: "POST",
@@ -466,8 +469,11 @@ async function askJarvisAI(message) {
             body: JSON.stringify({
                 message: message,
                 language: document.getElementById("language").value
-            })
+            }),
+            signal: controller.signal
         });
+
+        setStatus("ALIZA SERVER REPLIED...");
 
         if (!response.ok) {
             throw new Error("AI SERVER ERROR: " + response.status);
@@ -482,12 +488,22 @@ async function askJarvisAI(message) {
 
         addMessage("ALIZA", reply);
         setStatus("AI RESPONSE RECEIVED");
+
         await speak(reply);
 
     } catch (error) {
         console.error("ALIZA AI:", error);
-        setStatus("AI ERROR: " + error.message);
+
+        if (error.name === "AbortError") {
+            setStatus("AI TIMEOUT: SERVER NOT RESPONDING");
+        } else {
+            setStatus("AI ERROR: " + error.message);
+        }
+
         await speak("দুঃখিত, AI সার্ভারের সঙ্গে যোগাযোগ করা যাচ্ছে না।");
+
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 
