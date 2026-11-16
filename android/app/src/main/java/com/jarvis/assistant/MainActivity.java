@@ -7,6 +7,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(PhoneControlPlugin.class);
+        registerPlugin(AlizaVoicePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

@@ -730,6 +730,7 @@
       window.SpeechRecognitionPlugin = SpeechRecognition2;
       window.TextToSpeechPlugin = TextToSpeech;
       window.PhoneControlPlugin = registerPlugin("PhoneControl");
+      window.AlizaVoicePlugin = registerPlugin("AlizaVoice");
     }
   });
   require_speech();

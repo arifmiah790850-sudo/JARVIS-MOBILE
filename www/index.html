@@ -309,6 +309,7 @@ SYSTEM ONLINE
 
 <div>
 
+<button onclick="startListening()">START</button>
 <button class="stop" onclick="stopListening()">STOP</button>
 </div>
 
@@ -336,13 +337,7 @@ ALIZA: সিস্টেম অনলাইন, Boss! আমি প্রস্
 
 <script src="speech.js"></script>
 <script src="voice.js"></script>
-<script>
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        startListening();
-    }, 1000);
-});
-</script>
+<!-- Microphone starts only after the user taps START. -->
 <script>
 
 
@@ -557,12 +552,12 @@ async function handleVoiceCommand(text) {
 
 
 document.getElementById("language")
-.addEventListener("change", () => {
-    if (listeningEnabled) {
-        stopListening();
-        startListening();
-    }
-});
+    .addEventListener("change", async () => {
+        if (listeningEnabled) {
+            await stopListening();
+            await startListening();
+        }
+    });
 
 
 function toggleCustomization() {

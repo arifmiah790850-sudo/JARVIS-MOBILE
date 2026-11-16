@@ -5,3 +5,4 @@ import { registerPlugin } from "@capacitor/core";
 window.SpeechRecognitionPlugin = SpeechRecognition;
 window.TextToSpeechPlugin = TextToSpeech;
 window.PhoneControlPlugin = registerPlugin("PhoneControl");
+window.AlizaVoicePlugin = registerPlugin("AlizaVoice");
