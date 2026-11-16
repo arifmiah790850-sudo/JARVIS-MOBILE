@@ -7,6 +7,7 @@ let voiceStateListener = null;
 let voiceErrorListener = null;
 let restartTimer = null;
 let lastHandledTranscript = "";
+let lastVoiceError = "";
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -96,7 +97,7 @@ async function ensureVoiceListeners() {
 
                 if (listeningEnabled && !speaking) {
                     listeningEnabled = false;
-                    setStatus("VOICE SERVICE STOPPED");
+                    setStatus(lastVoiceError ? "VOICE SERVICE STOPPED: " + lastVoiceError : "VOICE SERVICE STOPPED");
                 }
             }
         });
@@ -105,6 +106,7 @@ async function ensureVoiceListeners() {
     if (!voiceErrorListener) {
         voiceErrorListener = await plugin.addListener("error", data => {
             const message = data.message || "UNKNOWN VOICE ERROR";
+            lastVoiceError = message;
             setStatus("VOICE ERROR: " + message);
             console.error("ALIZA voice:", message);
 
@@ -186,6 +188,7 @@ async function startListening() {
     if (listeningEnabled) return;
 
     listeningEnabled = true;
+    lastVoiceError = "";
     speaking = false;
     recognition = null;
     setStatus("REQUESTING MICROPHONE...");
