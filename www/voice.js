@@ -169,10 +169,29 @@ function resumeListeningAfterSpeech() {
     if (!listeningEnabled) return;
 
     clearTimeout(restartTimer);
+    restartTimer = null;
+
+    if (document.hidden) {
+        listeningEnabled = false;
+        recognition = null;
+        circle.classList.remove("active");
+        setStatus("RETURN TO ALIZA AND TAP START TO RESUME");
+        return;
+    }
+
     setStatus("RESTARTING LISTENING...");
 
     restartTimer = setTimeout(async () => {
         restartTimer = null;
+
+        if (document.hidden) {
+            listeningEnabled = false;
+            recognition = null;
+            circle.classList.remove("active");
+            setStatus("RETURN TO ALIZA AND TAP START TO RESUME");
+            return;
+        }
+
         if (listeningEnabled && !speaking) {
             try {
                 await startNativeSession();
